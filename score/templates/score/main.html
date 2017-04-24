@@ -1,0 +1,35 @@
+{% extends "score/layout.html" %}
+
+{% block title %}Web Services{% endblock %}
+
+{% block content %}
+    <div class="jumbotron" style="background-color: #d9edf7; padding-bottom: 30px; padding-top: 30px;">
+        {% if user.first_name|length == 0 %}
+        <!--h1>Hello, {{ user.username }}!</h1-->
+        <h1>Hello!</h1>
+        {% else %}
+        <!--h1>Hello, {{ user.first_name }}!</h1-->
+        <h1>Hello!</h1>
+        {% endif %}
+        <p>We need your help!<br>Below you have a list of Web Service, we need to go into each Web Service and score the comments which are inside.
+        The score is according how positive or negative is the comment for you.<br><br>Thank you so much for your time. :)</p>
+    </div>
+    <!--<div class="alert alert-info" role="alert">
+        Please below, you have a list of Web Service, we need to go into each Web Service and score the comments which are inside.
+        The score is according how positive or negative is for you.
+    </div>-->
+    <div class="page-header">
+        <h1>Web Services</h1>
+    </div>
+    <div class="list-group" style="margin-left: 100px; margin-right: 100px">
+        {% for api in apis %}
+        <a {% if api.available %} href="/score/webservice?page={{ forloop.counter }}" {% else %} href="" {% endif %} class="list-group-item {% if not api.available %}disabled{% endif %}">
+            {% if api.scored == 1 %}
+            <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" style="color: #3c763d;"></span>
+            {% endif %}
+            <h4 class="list-group-item-heading">{{ api.name }}</h4>
+            <p class="list-group-item-text">{{ api.description|slice:":500" }}</p>
+        </a>
+        {% endfor %}
+    </div>
+{% endblock %}

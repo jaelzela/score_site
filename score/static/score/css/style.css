@@ -1,0 +1,41 @@
+body {
+    padding-top: 70px;
+}
+
+body > footer {
+    text-align: center;
+}
+
+blockquote {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #eee;
+    //border-left: 5px solid #1b809e;
+    border-style: solid;
+    border-width: 1px 1px 1px 5px;
+    border-image: none;
+    border-radius: 3px;
+}
+
+.thumbnail::after{
+    color: #959595;
+    content: "Description:";
+    font-size: 12px;
+    font-weight: 700;
+    left: 15px;
+    letter-spacing: 1px;
+    position: absolute;
+    text-transform: uppercase;
+    top: 15px;
+}
+
+.thumbnail {
+    padding: 45px 15px 15px;
+    position: relative;
+}
+
+.quoteactive {
+    border-left: 5px solid rgb(27, 128, 158);
+}

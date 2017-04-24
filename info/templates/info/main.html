@@ -1,0 +1,111 @@
+{% extends "info/layout.html" %}
+
+{% block title %}Web Services{% endblock %}
+
+{% block content %}
+    <style>
+        #sticky {
+            padding: 0.5ex;
+            width: 600px;
+            background-color: #333;
+            color: #fff;
+            font-size: 2em;
+            border-radius: 0.5ex;
+        }
+    </style>
+    <div class="jumbotron" style="background-color: #d9edf7; padding-bottom: 10px; padding-top: 10px;">
+        {% if user.first_name|length == 0 %}
+        <!--h1>Hello, {{ user.username }}!</h1-->
+        <h1>Hello!</h1>
+        {% else %}
+        <!--h1>Hello, {{ user.first_name }}!</h1-->
+        <h1>Hello!</h1>
+        {% endif %}
+        <p style="font-size: 18px;">We need your help!<br>Below you have a list of Web Service, you need to score each one
+            according the showed extra information, described below, use your own criteria to score each Web service.<br>
+            <br>Thank you so much for your time. :)<br>
+            <br><b>Articles:</b> number of articles related to the Web services.
+            <br><b>Followers:</b> number of followers which has the Web services.
+            <br><b>Developers:</b> number of developers which use the Web services.
+            <br><b>Mashups:</b> number of developed mashups using the Web services.
+            <br><br>Referential numbers are also showed to get an overview about the minimal and maximal number of each
+            information as well as the average and standard deviation.
+        </p>
+    </div>
+    <br>
+    <div id="references" class="alert alert-info text-center" role="alert">
+        <div class="row">
+            <div class="col-md-1" style="font-size: 20px;"></div>
+            <div class="col-md-2" style="font-size: 20px;"><strong>References:</strong></div>
+            {% for info in infos %}
+            <div class="col-md-2" style="padding-left: 0px; padding-right: 0px;">
+                Min/Max {{ info.name }}: <b style="font-size: 20px;">{{ info.min }}/{{ info.max }}</b><br>
+                Average: <b style="font-size: 20px;">{{ info.mean }}</b><br>
+                St Dev: <b style="font-size: 20px;">{{ info.stdev }}</b><br>
+            </div>
+            {% endfor %}
+            <div class="col-md-1" style="font-size: 20px;"></div>
+        </div>
+    </div>
+    <!--<div class="alert alert-info" role="alert">
+        Please below, you have a list of Web Service, we need to go into each Web Service and score the comments which are inside.
+        The score is according how positive or negative is for you.
+    </div>-->
+    <div class="page-header">
+        <h1>Web Services</h1>
+    </div>
+    <div class="list-group" style="margin-left: 100px; margin-right: 100px">
+        {% for api in apis %}
+        <a class="list-group-item" style="position: inherit;">
+            {% if api.scored == 1 %}
+            <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" style="color: #3c763d;"></span>
+            {% endif %}
+            <h4 class="list-group-item-heading">{{ api.name }}</h4>
+            <p class="list-group-item-text">{{ api.description }}</p>
+            <br>
+            <p> <b>Articles</b>: <span class="badge">{{ api.articles }}</span> &nbsp;&nbsp;&nbsp; <b>Followers</b>: <span class="badge">{{ api.followers }}</span> &nbsp;&nbsp;&nbsp; <b>Developers</b>: <span class="badge">{{ api.developers }}</span> &nbsp;&nbsp;&nbsp; <b>Mashups</b>: <span class="badge">{{ api.mashups }}</span></p>
+        </a>
+        <nav id="{{ api.id }}">
+            <span style="float: left; margin-top: 8px;"><b>Set a score:</b></span>&nbsp;&nbsp;
+            <ul class="pagination pagination-sm" style="margin-top: 5px;">
+                <li {% if api.info_score == 0 %} class="active" {% endif %} ><a href="#" style="position: inherit;">0</a></li>
+                <li {% if api.info_score == 1 %} class="active" {% endif %} ><a href="#" style="position: inherit;">1</a></li>
+                <li {% if api.info_score == 2 %} class="active" {% endif %} ><a href="#" style="position: inherit;">2</a></li>
+                <li {% if api.info_score == 3 %} class="active" {% endif %} ><a href="#" style="position: inherit;">3</a></li>
+                <li {% if api.info_score == 4 %} class="active" {% endif %} ><a href="#" style="position: inherit;">4</a></li>
+                <li {% if api.info_score == 5 %} class="active" {% endif %} ><a href="#" style="position: inherit;">5</a></li>
+            </ul>
+        </nav>
+        <br>
+        {% endfor %}
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("#references").sticky({topSpacing:50});
+
+        $('nav > ul').on('click', 'li > a', function(event){
+            event.preventDefault();
+            element = $(this);
+            ws_id = element.parents("nav").attr('id');
+            score = element.text();
+            $('#wsalert').hide();
+            $.ajax({
+                url: "/score_site/info/webservice/infoscore",
+                type: "post",
+                cache: false,
+                data: {'score':score, 'ws_id':ws_id},
+                success: function(response) {
+                    if (response['status'] == '200') {
+                        $("#"+ws_id+">ul>li").each(function(){
+                            $(this).removeClass('active')
+                        });
+
+                        element.parent().addClass('active');
+                        //element.parents("blockquote").find('textarea').show();
+                    }
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

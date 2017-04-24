@@ -1,0 +1,76 @@
+{% extends "fp/layout.html" %}
+
+{% block title %}{{ apis.0.name }} - Score{% endblock %}
+
+{% block content %}
+    <style>
+        .page-header span {
+
+            font-size: 2em;
+            margin-before: 0.67em;
+            margin-after: 0.67em;
+            margin-start: 0;
+            margin-end: 0;
+            font-weight: bold;
+        }
+        .table {
+            border-collapse: collapse;
+        }
+    </style>
+    {% for api in apis %}
+    <div id="{{ api.id }}" class="page-header">
+        <span>{{ api.name }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>Users' score:</b> {{api.user_scores}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>Result:</b> {{api.fp}}
+    </div>
+    <br>
+    <div class="list-group" style="margin-left: 100px; margin-right: 100px;">
+        <blockquote id="{{ comment.id }}" class="quoteactive">
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th width="5%"><h3>ID</h3></th>
+                        <th width="65%"><h3>Comments</h3></th>
+                        <th width="15%"><h3>Users'score</h3></th>
+                        <th width="15%"><h3>Results</h3>(false positives)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comment in api.comments %}
+                    <tr>
+                        <td align="center">{{ comment.id }}</td>
+                        <td>{{ comment.text|safe|escape }}</td>
+                        <td align="center">{{comment.user_scores}}</td>
+                        <td align="center">{{comment.fp}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">&nbsp;&nbsp;POS: &nbsp;&nbsp;&nbsp;
+                            {{ comment.pos }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">&nbsp;&nbsp;Tuples: &nbsp;&nbsp;&nbsp;
+                        <table border="1" class="table">
+                            <tr>
+                                {% for tuple in comment.tuples %}
+                                <td>{{ tuple }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                {% for polarity in comment.tuples_polarity %}
+                                <td>{{ polarity }}</td>
+                                {% endfor %}
+                            </tr>
+                        </table><br>
+                        </td>
+                        <!--td colspan="4">&nbsp;&nbsp;Tuples: &nbsp;&nbsp;&nbsp;{{ comment.tuples }}</td-->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </blockquote>
+    </div>
+    {% endfor %}
+    <script type="text/javascript">
+    </script>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends "score/layout.html" %}
+
+{% block title %}{{ apis.0.name }} - Score{% endblock %}
+
+{% block content %}
+    <div class="jumbotron" style="background-color: #d9edf7; padding-bottom: 30px; padding-top: 30px;">
+        <p>Please score each comment according how positive or negative is it for you. A general score is also required
+        for the whole Web Service.</p>
+    </div>
+    <nav>
+        <ul class="pager">
+            {% if apis.has_previous %}
+            <li class="previous"><a href="?page={{ apis.previous_page_number }}"><span aria-hidden="true">&larr;</span> Previous</a></li>
+            {% else %}
+            <li class="previous"><a href="/score/main"><span aria-hidden="true">&larr;</span> Web Services List</a></li>
+            {% endif %}
+            {% if apis.has_next %}
+            <li class="next"><a href="?page={{ apis.next_page_number }}">Next <span aria-hidden="true">&rarr;</span></a></li>
+            {% else %}
+            <li class="next"><a href="/score/main">Web Services List <span aria-hidden="true">&rarr;</span></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+<div id="cmtalert" class="alert alert-danger" role="alert"><strong>WARNING:</strong> All comments need to be scored.</div>
+    <div id="wsalert" class="alert alert-danger" role="alert"><strong>WARNING:</strong> Web service as a whole needs to be scored too.</div>
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ porcentage }}%;">
+            {{ porcentage }}%
+        </div>
+    </div>
+    {% for api in apis %}
+    <div id="{{ api.id }}" class="page-header">
+        <h1>{{ api.name }} </h1>
+    </div>
+    <nav id="score_header">
+        <span style="float: left; margin-top: 8px; font-size: 18px;">Score for the whole Web Service:</span>&nbsp;&nbsp;
+        <ul class="pagination" style="margin-top: 0px;">
+            <li {% if api.score == -2 %} class="active" {% endif %} ><a href="#">-2</a></li>
+            <li {% if api.score == -1 %} class="active" {% endif %} ><a href="#">-1</a></li>
+            <li {% if api.score == 0 %} class="active" {% endif %} ><a href="#">0</a></li>
+            <li {% if api.score == 1 %} class="active" {% endif %} ><a href="#">1</a></li>
+            <li {% if api.score == 2 %} class="active" {% endif %} ><a href="#">2</a></li>
+        </ul>
+    </nav>
+    <div class="thumbnail">
+        <div class="caption">
+            <p>{{ api.description }}</p>
+        </div>
+    </div>
+    <br>
+    <div class="alert alert-info text-center" role="alert">
+        <div class="row">
+            <div class="col-md-2" style="font-size: 20px;"><strong>Scores:</strong></div>
+            <div class="col-md-2"><b style="font-size: 20px;">-2</b>: VERY NEGATIVE</div>
+            <div class="col-md-2"><b style="font-size: 20px;">-1</b>: NEGATIVE</div>
+            <div class="col-md-2"><b style="font-size: 20px;">0</b>: NEUTRAL</div>
+            <div class="col-md-2"><b style="font-size: 20px;">1</b>: POSITIVE</div>
+            <div class="col-md-2"><b style="font-size: 20px;">2</b>: VERY POSITIVE</div>
+        </div>
+    </div>
+    <h3 style="margin-left: 100px; margin-right: 100px;">Comments</h3>
+    <div class="list-group" style="margin-left: 100px; margin-right: 100px;">
+        {% for comment in comments %}
+        <blockquote id="{{ comment.id }}" {% if comment.scored == 1 %} class="quoteactive" {% endif %}>
+
+            <p>{{ comment.text|safe|escape }}</p>
+            <!--footer>{{ comment.date|date:"M. d, Y" }}</footer-->
+            <nav>
+                <ul class="pagination pagination-sm">
+                    <li {% if comment.score == -2 %} class="active" {% endif %} ><a href="#">-2</a></li>
+                    <li {% if comment.score == -1 %} class="active" {% endif %} ><a href="#">-1</a></li>
+                    <li {% if comment.score == 0 %} class="active" {% endif %} ><a href="#">0</a></li>
+                    <li {% if comment.score == 1 %} class="active" {% endif %} ><a href="#">1</a></li>
+                    <li {% if comment.score == 2 %} class="active" {% endif %} ><a href="#">2</a></li>
+                </ul>
+            </nav>
+            <textarea name="review" class="form-control" rows="2" {% if comment.scored != 1 %} style="display: none;" {% endif %} placeholder="Optional: say something about the scored comment if you want..." >{{ comment.review }}</textarea>
+            <footer style="display: none; color: #ccc; text-align: right;">Saved</footer>
+        </blockquote>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    <nav>
+        <ul class="pager">
+            {% if apis.has_previous %}
+            <li class="previous"><a href="?page={{ apis.previous_page_number }}"><span aria-hidden="true">&larr;</span> Previous</a></li>
+            {% else %}
+            <li class="previous"><a href="/score/main"><span aria-hidden="true">&larr;</span> Web Services List</a></li>
+            {% endif %}
+            {% if apis.has_next %}
+            <li class="next"><a href="?page={{ apis.next_page_number }}">Next <span aria-hidden="true">&rarr;</span></a></li>
+            {% else %}
+            <li class="next"><a href="/score/main">Web Services List <span aria-hidden="true">&rarr;</span></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#wsalert').hide();
+        $('#cmtalert').hide();
+
+        $('blockquote > nav > ul').on('click', 'li > a', function(event){
+            event.preventDefault();
+            element = $(this);
+            cmt_id = element.parents("blockquote").attr('id');
+            score = element.text();
+            $('#cmtalert').hide();
+            $.ajax({
+                url: "/score/comment/score",
+                type: "post",
+                cache: false,
+                data: {'score':score, 'cmt_id':cmt_id},
+                success: function(response) {
+                    if (response['status'] == '200') {
+                        $("#"+cmt_id+">nav>ul>li").each(function(){
+                            $(this).removeClass('active')
+                        });
+
+                        element.parent().addClass('active');
+                        element.parents("blockquote").addClass('quoteactive')
+                        element.parents("blockquote").find('textarea').show();
+                    }
+                }
+            });
+        });
+
+        $('#score_header > ul').on('click', 'li > a', function(event){
+            event.preventDefault();
+            element = $(this)
+            score = element.text();
+            ws_id = $('div.page-header').attr('id')
+            console.log(score)
+            console.log(ws_id)
+            $('#wsalert').hide();
+            $.ajax({
+                url: "/score/webservice/score",
+                type: "post",
+                cache: false,
+                data: {'score':score, 'ws_id':ws_id},
+                success: function(response) {
+                    console.log(response)
+                    if (response['status'] == '200') {
+                        $('#score_header > ul > li').each(function(){
+                            $(this).removeClass('active')
+                        });
+
+                        element.parent().addClass('active');
+                    }
+                }
+            });
+        });
+
+        $('nav>ul.pager>li').on('click', 'a', function(event){
+            num_comments = $('blockquote').length
+            num_scored_comments = $('blockquote.quoteactive').length
+
+            if ($(this).parent().hasClass('previous')) {
+                return
+            }
+
+            if (num_comments != num_scored_comments) {
+                event.preventDefault();
+                $('#cmtalert').show();
+                window.scrollTo(0,0);
+                //alert("All comments need to be score.")
+            }
+
+            header = $('#score_header>ul>li.active')
+            if (header.length == 0) {
+                event.preventDefault();
+                $('#wsalert').show();
+                window.scrollTo(0,0);
+                //alert("Web service as a whole need to be score too.")
+            }
+        });
+
+        $('textarea').focusout(function(){
+            element = $(this)
+            cmt_id = element.parents().attr('id');
+            review = element.val();
+            $.ajax({
+                url: "/score/comment/review",
+                type: "post",
+                cache: false,
+                data: {'review':review, 'cmt_id':cmt_id},
+                success: function(response) {
+                    if (response['status'] == '200') {
+                        element.parent().find('footer').show();
+                    }
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

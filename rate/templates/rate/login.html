@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Rate Web Services</title>
+    {% load staticfiles %}
+    <script type="text/javascript" src="{% static 'score/js/jquery-1.12.0.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'score/js/bootstrap.min.js' %}" ></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'score/css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'score/css/login.css' %}" />
+</head>
+<body>
+    <div class="container">
+        <form class="form-signin" action="{% url 'rate:login' %}" method="POST">
+            <h2 class="form-signin-heading">Rate Web Service</h2>
+            <h4 class="form-signin-heading">Please sign in</h4>
+            {% csrf_token %}
+            {% if login_error %}
+            <div class="alert alert-danger" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                {{login_error}}
+            </div>
+            {% endif %}
+            {% if next %}
+            <input type="hidden" name="next" value="{{ next }}"/>
+            {% endif %}
+            <label for="username" class="sr-only">Username</label>
+            <input id="username" name="username" class="form-control input" placeholder="Username" required="" autofocus="" type="text">
+            <label for="password" class="sr-only">Password</label>
+            <input id="password" name="password" class="form-control input" placeholder="Password" required="" type="password">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            <br>
+            <!--footer style="text-align: center;"><a href="/score_site/rate/signup">Sign Up</a><footer-->
+        </form>
+    </div>
+</body>
+</html>

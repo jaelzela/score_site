@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Score Web Services</title>
+    {% load staticfiles %}
+    <script type="text/javascript" src="{% static 'score/js/jquery-1.12.0.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'score/js/bootstrap.min.js' %}" ></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'score/css/bootstrap.min.css' %}" />
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <form action="{% url 'score:user_assignment' %}" method="POST" style="padding-top: 50px; padding-bottom: 50px;">
+                    {% csrf_token %}
+                    <input name="username" type="hidden" value="{{ new_user.username }}" />
+                    <div class="page-header">
+                        <h1>Web Services &nbsp;&nbsp;&nbsp;&nbsp;<small><span class="label label-info">Select at least 20 Web Services</span></small></h1>
+                    </div>
+                    <table class="table table-hover">
+                        <tbody>
+                            {% for api in apis %}
+                            <tr>
+                                <td width="15%" style="position: relative;">
+                                    <span style="position: absolute; right: 50%; bottom: 60%;">
+                                        <input type="checkbox" name="ws{{ api.id }}" style="width: 20px; height: 20px;"/>
+                                    </span>
+                                    <br>
+                                    <span style="position: absolute; bottom: 0; padding-bottom: 15px;">
+                                        <b>Assigned to:&nbsp;</b>&nbsp;{{ api.num_scores }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a class="list-group-item" style="border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-top-left-radius: 0px; border-top-right-radius: 0px; border: 0px solid #ddd; border-left: 1px solid #ddd;">
+                                        <h4 class="list-group-item-heading">{{ api.name }}</h4>
+                                        <p class="list-group-item-text">{{ api.description|slice:":300" }}</p>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <footer style="text-align: right;"><button class="btn btn-lg btn-primary" type="submit">Assign <span id="counter" class="badge">0</span></button></footer>
+                </form>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+    <br>
+    <footer style="text-align: center;"> <a href="http://www.lirmm.fr/~zela/">@jzelar</a> | <a href="http://www.lirmm.fr">LIRMM</a> | <a href="http://www.umontpellier.fr">Université de Montpellier</a></footer>
+    <br>
+<script type="text/javascript">
+    $(document).ready(function() {
+        counter = 0
+        $("input[type='checkbox']").each(function(index) {
+            if ($(this)[0].checked){
+                counter = counter + 1;
+                $("#counter").html(counter)
+            }
+        });
+
+        $("input[type='checkbox']").on('click', function(){
+            console.log($(this)[0].checked)
+            if ($(this)[0].checked) {
+                val = parseInt($("#counter").text())
+                $("#counter").html(val + 1)
+                console.log(val+1)
+            } else {
+                val = parseInt($("#counter").text())
+                $("#counter").html(val - 1)
+                console.log(val-1)
+            }
+        });
+    });
+    $(document).on('click', 'form button[type=submit]', function(e) {
+        var isValid = false;
+        counter = 0;
+        $("input[type='checkbox']").each(function(index) {
+            if ($(this)[0].checked){
+                counter = counter + 1;
+            }
+        });
+        console.log(counter)
+        if (counter == 20) {
+            isValid = true;
+        }
+
+        if(!isValid) {
+          e.preventDefault();
+          alert("Select at least 20 Web Services")
+        }
+    });
+</script>
+</body>
+</html>

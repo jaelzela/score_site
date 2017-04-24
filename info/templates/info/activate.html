@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Score Web Services</title>
+    {% load staticfiles %}
+    <script type="text/javascript" src="{% static 'score/js/jquery-1.12.0.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'score/js/bootstrap.min.js' %}" ></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'score/css/bootstrap.min.css' %}" />
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <form action="{% url 'score:activate_user' %}" method="POST" style="padding-top: 50px;">
+                    {% csrf_token %}
+                    <div class="page-header">
+                        <h1>Activate User</h1>
+                    </div>
+                    <table class="table table-condensed">
+                        <tbody>
+                            <tr>
+                                <td>Name:</td>
+                                <td>{{ new_user.first_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Surname:</td>
+                                <td>{{ new_user.last_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Email:</td>
+                                <td>{{ new_user.email }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <input type="hidden" name="email" value="{{ new_user.email }}"/>
+                    <footer style="text-align: right;"><button class="btn btn-primary" type="submit">Activate</button></footer>
+                </form>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("input[type='text']").value('')
+        $("input[type='email']").value('')
+        $("input[type='password']").value('')
+    });
+</script>
+</body>
+</html>

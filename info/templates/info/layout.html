@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% load staticfiles %}
+    <script type="text/javascript" src="{% static 'score/js/jquery-1.12.0.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'score/js/bootstrap.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'score/js/jquery.sticky.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'score/js/script.js' %}" ></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'score/css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'score/css/style.css' %}" />
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Score Web Services</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li style="padding-right: 40px;"><p class="navbar-text navbar-right">Signed in as <b>{{ user.username }}</b></p></li>
+            <li class="active"><a href="/score_site/info/logout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="container-fluid">
+{% block content %}{% endblock %}
+</div>
+<footer> <a href="http://www.lirmm.fr/~zela/">@jzelar</a> | <a href="http://www.lirmm.fr">LIRMM</a> | <a href="http://www.umontpellier.fr">Université de Montpellier</a></footer>
+<br>
+</body>
+</html>
